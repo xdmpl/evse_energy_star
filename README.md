@@ -6,7 +6,7 @@
 
 
 
-!\[Logo](https://github.com/V-Plum/evse_energy_star/blob/main/custom_components/evse_energy_star/icon.png)
+![Logo](https://raw.githubusercontent.com/V-Plum/evse_energy_star/main/custom_components/evse_energy_star/icon.png)
 
 
 
@@ -129,7 +129,7 @@ config/custom\_components/evse\_energy\_star
 
 
 
-!\[Dashboard example](images/dashboard_example.png)
+![Dashboard example](images/dashboard_example.png)
 
 
 
