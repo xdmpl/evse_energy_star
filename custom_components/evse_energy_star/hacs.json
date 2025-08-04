@@ -1,0 +1,7 @@
+{
+  "name": "EVSE Energy Star",
+  "content_in_root": false,
+  "domains": ["sensor", "switch", "number", "button", "select"],
+  "homeassistant": "2023.0.0",
+  "country": "UA"
+}

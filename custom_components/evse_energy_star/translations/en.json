@@ -1,0 +1,47 @@
+{
+  "component.evse_energy_star.config.title": "EVSE Energy Star",
+  "component.evse_energy_star.config.step.user.title": "EVSE Connection",
+  "component.evse_energy_star.config.step.user.description": "Enter the IP address, username, and password to connect to the charging station.",
+  "component.evse_energy_star.config.step.user.data.host": "Charger IP Address",
+  "component.evse_energy_star.config.step.user.data.username": "Username",
+  "component.evse_energy_star.config.step.user.data.password": "Password",
+  "component.evse_energy_star.config.error.connection": "Connection error",
+  "component.evse_energy_star.config.error.invalid_ip": "Invalid IP address",
+
+  "component.evse_energy_star.options.title": "EVSE Settings",
+  "component.evse_energy_star.options.step.init.description": "Update EVSE configuration",
+  "component.evse_energy_star.options.step.init.data.host": "Charger IP",
+  "component.evse_energy_star.options.step.init.data.username": "Username",
+  "component.evse_energy_star.options.step.init.data.password": "Password",
+
+  "entity.sensor.evse_energy_star_status.name": "Charging Status",
+  "entity.sensor.evse_energy_star_current_set.name": "Set Current",
+  "entity.sensor.evse_energy_star_current_phase_1.name": "Phase 1 Current",
+  "entity.sensor.evse_energy_star_voltage_phase_1.name": "Phase 1 Voltage",
+  "entity.sensor.evse_energy_star_temperature_box.name": "Box Temperature",
+  "entity.sensor.evse_energy_star_temperature_socket.name": "Socket Temperature",
+  "entity.sensor.evse_energy_star_leakage.name": "Leakage",
+  "entity.sensor.evse_energy_star_session_energy.name": "Session Energy",
+  "entity.sensor.evse_energy_star_session_time.name": "Session Duration",
+  "entity.sensor.evse_energy_star_total_energy.name": "Total Energy",
+  "entity.sensor.evse_energy_star_system_time.name": "System Time",
+  "entity.sensor.evse_energy_star_ground_status.name": "Ground Status",
+
+  "entity.number.evse_energy_star_current_limit.name": "Current Limit",
+  "entity.number.evse_energy_star_voltage_adaptive.name": "Adaptive Voltage",
+
+  "entity.select.evse_energy_star_time_zone.name": "Time Zone",
+  "entity.select.evse_energy_star_refresh_rate.name": "Update Rate",
+
+  "entity.switch.evse_energy_star_control_pe.name": "Ground Control",
+  "entity.switch.evse_energy_star_restricted_mode.name": "16A Mode",
+  "entity.switch.evse_energy_star_schedule.name": "Scheduled Charging",
+  "entity.switch.evse_energy_star_one_charge.name": "One-Time Charge",
+  "entity.switch.evse_energy_star_adaptive_mode.name": "Adaptive Mode",
+
+  "entity.button.evse_energy_star_time_get.name": "Sync Time",
+  "entity.button.evse_energy_star_start_now.name": "Start Charging",
+
+  "entity.text.evse_energy_star_start_time.name": "Start Time",
+  "entity.text.evse_energy_star_stop_time.name": "Stop Time"
+}

@@ -1,0 +1,30 @@
+{
+  "title": "EVSE Energy Star",
+  "description": "Локальна інтеграція з зарядкою через HTTP-запити",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Параметри зарядки",
+        "description": "Введи IP-адресу та облікові дані",
+        "data": {
+          "host": "IP-адреса",
+          "username": "Ім’я користувача",
+          "password": "Пароль"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Оновлення EVSE",
+        "description": "Оновлення конфігурації зарядного пристрою",
+        "data": {
+          "host": "IP-адреса",
+          "username": "Ім’я користувача",
+          "password": "Пароль"
+        }
+      }
+    }
+  }
+}
