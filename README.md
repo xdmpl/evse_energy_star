@@ -6,7 +6,7 @@
 
 
 
-!\[Logo](https://github.com/V-Plum/evse\_energy\_star/raw/main/custom\_components/evse\_energy\_star/icon.png)
+!\[Logo](https://github.com/V-Plum/evse_energy_star/blob/main/custom_components/evse_energy_star/icon.png)
 
 
 
@@ -50,8 +50,7 @@
 
 2\. Встав:
 
-https://github.com/V-Plum/evse\_energy\_star
-
+https://github.com/V-Plum/evse_energy_star
 
 
 markdown
@@ -130,7 +129,7 @@ config/custom\_components/evse\_energy\_star
 
 
 
-!\[Dashboard example](images/dashboard\_example.png)
+!\[Dashboard example](images/dashboard_example.png)
 
 
 
