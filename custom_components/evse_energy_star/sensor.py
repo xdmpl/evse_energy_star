@@ -5,38 +5,55 @@ from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.components.sensor import SensorStateClass, SensorDeviceClass
 from .const import DOMAIN, STATUS_MAP
 
 _LOGGER = logging.getLogger(__name__)
 
 SENSOR_DEFINITIONS = [
-    ("state", "status", "Статус зарядки", None),
-    ("currentSet", "current_set", "Струм (встановлений)", "A"),
-    ("curMeas1", "current_phase_1", "Струм фаза 1", "A"),
-    ("voltMeas1", "voltage_phase_1", "Напруга фаза 1", "V"),
-    ("temperature1", "temperature_box", "Темп. корпусу", "°C"),
-    ("temperature2", "temperature_socket", "Темп. роз'єму", "°C"),
-    ("leakValue", "leakage", "Витік", "мА"),
-    ("sessionEnergy", "session_energy", "Енергія сесії", "kWh"),
-    ("sessionTime", "session_time", "Час сесії", None),
-    ("totalEnergy", "total_energy", "Загальна енергія", "kWh"),
-    ("systemTime", "system_time", "Системний час", None),
+    # key, id_, name, unit, state_class, device_class
+    ("state", "status", "Статус зарядки", None, None, None),
+    ("currentSet", "current_set", "Струм (встановлений)", "A", SensorStateClass.MEASUREMENT, SensorDeviceClass.CURRENT),
+    ("curMeas1", "current_phase_1", "Струм фаза 1", "A", SensorStateClass.MEASUREMENT, SensorDeviceClass.CURRENT),
+    ("voltMeas1", "voltage_phase_1", "Напруга фаза 1", "V", SensorStateClass.MEASUREMENT, SensorDeviceClass.VOLTAGE),
+    ("temperature1", "temperature_box", "Темп. корпусу", "°C", SensorStateClass.MEASUREMENT, SensorDeviceClass.TEMPERATURE),
+    ("temperature2", "temperature_socket", "Темп. роз'єму", "°C", SensorStateClass.MEASUREMENT, SensorDeviceClass.TEMPERATURE),
+    ("leakValue", "leakage", "Витік", "мА", SensorStateClass.MEASUREMENT, None),
+    ("sessionEnergy", "session_energy", "Енергія сесії", "kWh", SensorStateClass.TOTAL_INCREASING, SensorDeviceClass.ENERGY),
+    ("sessionTime", "session_time", "Час сесії", None, None, None),
+    ("totalEnergy", "total_energy", "Загальна енергія", "kWh", SensorStateClass.TOTAL_INCREASING, SensorDeviceClass.ENERGY),
+    ("systemTime", "system_time", "Системний час", None, None, None),
+]
+
+THREE_PHASE_SENSORS = [
+    ("curMeas2", "current_phase_2", "Струм фаза 2", "A", SensorStateClass.MEASUREMENT, SensorDeviceClass.CURRENT),
+    ("curMeas3", "current_phase_3", "Струм фаза 3", "A", SensorStateClass.MEASUREMENT, SensorDeviceClass.CURRENT),
+    ("voltMeas2", "voltage_phase_2", "Напруга фаза 2", "V", SensorStateClass.MEASUREMENT, SensorDeviceClass.VOLTAGE),
+    ("voltMeas3", "voltage_phase_3", "Напруга фаза 3", "V", SensorStateClass.MEASUREMENT, SensorDeviceClass.VOLTAGE),
 ]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
     entry_id = entry.entry_id
 
+    device_type = entry.options.get("device_type", entry.data.get("device_type", "1_phase"))
+
     entities = [
-        EVSESensor(coordinator, key, id_, name, unit, entry_id)
-        for key, id_, name, unit in SENSOR_DEFINITIONS
+        EVSESensor(coordinator, key, id_, name, unit, state_class, device_class, entry_id)
+        for key, id_, name, unit, state_class, device_class in SENSOR_DEFINITIONS
     ]
+
+    if device_type == "3_phase":
+        entities += [
+            EVSESensor(coordinator, key, id_, name, unit, state_class, device_class, entry_id)
+            for key, id_, name, unit, state_class, device_class in THREE_PHASE_SENSORS
+        ]
 
     entities.append(EVSEGroundStatus(coordinator, entry_id))
     async_add_entities(entities)
 
 class EVSESensor(CoordinatorEntity, SensorEntity):
-    def __init__(self, coordinator, key, id_, name, unit, entry_id):
+    def __init__(self, coordinator, key, id_, name, unit, state_class, device_class, entry_id):
         super().__init__(coordinator)
         self.coordinator = coordinator
         self._key = key
@@ -44,6 +61,8 @@ class EVSESensor(CoordinatorEntity, SensorEntity):
         self._attr_native_unit_of_measurement = unit
         self._attr_unique_id = f"{id_}_{entry_id}"
         self._entry_id = entry_id
+        self._attr_state_class = state_class
+        self._attr_device_class = device_class
 
     @property
     def available(self) -> bool:

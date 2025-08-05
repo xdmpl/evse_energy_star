@@ -2,29 +2,31 @@ from homeassistant import config_entries
 import voluptuous as vol
 from .const import DOMAIN
 
+DEVICE_TYPES = {
+    "1_phase": "1_phase",
+    "3_phase": "3_phase"
+}
+
 class EVSEEnergyStarOptionsFlow(config_entries.OptionsFlow):
     def __init__(self, config_entry: config_entries.ConfigEntry):
         self.config_entry = config_entry
 
     async def async_step_init(self, user_input=None):
         if user_input is not None:
-            self.hass.config_entries.async_update_entry(
-                self.config_entry,
-                data=user_input
-            )
+            return self.async_create_entry(title="", data=user_input)
 
-            coordinator = self.hass.data[DOMAIN][self.config_entry.entry_id]["coordinator"]
-            coordinator.host = user_input.get("host")
-            await coordinator.async_request_refresh()
-
-            return self.async_create_entry(title=DOMAIN, data={})
+        current = self.config_entry.options
+        data = self.config_entry.data
 
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema({
-                vol.Required("host", default=self.config_entry.data.get("host", "")): str,
-                vol.Optional("username", default=self.config_entry.data.get("username", "")): str,
-                vol.Optional("password", default=self.config_entry.data.get("password", "")): str,
+                vol.Required("host", default=current.get("host", data.get("host", ""))): str,
+                vol.Optional("username", default=current.get("username", data.get("username", ""))): str,
+                vol.Optional("password", default=current.get("password", data.get("password", ""))): str,
+                vol.Required("device_type",
+                             default=current.get("device_type", data.get("device_type", "1_phase"))): vol.In(
+                    DEVICE_TYPES),
             }),
         )
 

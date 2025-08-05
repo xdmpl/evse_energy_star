@@ -2,7 +2,10 @@ from homeassistant import config_entries
 import voluptuous as vol
 from .const import DOMAIN
 from .options_flow import EVSEEnergyStarOptionsFlow
+from homeassistant.helpers import selector
 import re
+
+DEVICE_TYPES = ["1_phase", "3_phase"]
 
 class EVSEEnergyStarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """EVSE Energy Star Config Flow."""
@@ -29,9 +32,16 @@ class EVSEEnergyStarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema({
-                vol.Required("host"): str,
-                vol.Optional("username"): str,
-                vol.Optional("password"): str,
+                vol.Required("host", default=""): str,
+                vol.Optional("username", default=""): str,
+                vol.Optional("password", default=""): str,
+                vol.Required("device_type", default="1_phase"): selector.SelectSelector(
+                    selector.SelectSelectorConfig(
+                        options=DEVICE_TYPES,
+                        translation_key="device_type",  # ✅ Це дозволено тут
+                        sort=True,
+                    )
+                ),
             }),
             errors=errors
         )

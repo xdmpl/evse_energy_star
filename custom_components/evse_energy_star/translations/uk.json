@@ -1,48 +1,133 @@
 {
-  "component.evse_energy_star.config.title": "EVSE Energy Star",
-  "component.evse_energy_star.config.step.user.title": "Підключення EVSE",
-  "component.evse_energy_star.config.step.user.description": "Введіть IP-адресу, логін та пароль для підключення до зарядної станції.",
-  "component.evse_energy_star.config.step.user.data.host": "IP-адреса",
-  "component.evse_energy_star.config.step.user.data.username": "Ім’я користувача",
-  "component.evse_energy_star.config.step.user.data.password": "Пароль",
-  "component.evse_energy_star.config.error.connection": "Помилка підключення",
-  "component.evse_energy_star.config.error.invalid_ip": "Неправильна IP-адреса",
-
-  "component.evse_energy_star.options.title": "Налаштування EVSE",
-  "component.evse_energy_star.options.step.init.title": "Оновлення EVSE",
-  "component.evse_energy_star.options.step.init.description": "Оновлення конфігурації зарядного пристрою",
-  "component.evse_energy_star.options.step.init.data.host": "IP-адреса",
-  "component.evse_energy_star.options.step.init.data.username": "Ім’я користувача",
-  "component.evse_energy_star.options.step.init.data.password": "Пароль",
-
-  "entity.sensor.evse_energy_star_status.name": "Статус зарядки",
-  "entity.sensor.evse_energy_star_current_set.name": "Струм (встановлений)",
-  "entity.sensor.evse_energy_star_current_phase_1.name": "Струм фаза 1",
-  "entity.sensor.evse_energy_star_voltage_phase_1.name": "Напруга фаза 1",
-  "entity.sensor.evse_energy_star_temperature_box.name": "Темп. корпусу",
-  "entity.sensor.evse_energy_star_temperature_socket.name": "Темп. роз'єму",
-  "entity.sensor.evse_energy_star_leakage.name": "Витік",
-  "entity.sensor.evse_energy_star_session_energy.name": "Енергія сесії",
-  "entity.sensor.evse_energy_star_session_time.name": "Час сесії",
-  "entity.sensor.evse_energy_star_total_energy.name": "Загальна енергія",
-  "entity.sensor.evse_energy_star_system_time.name": "Системний час",
-  "entity.sensor.evse_energy_star_ground_status.name": "Заземлення",
-
-  "entity.number.evse_energy_star_current_limit.name": "Обмеження струму",
-  "entity.number.evse_energy_star_voltage_adaptive.name": "Напруга адаптації",
-
-  "entity.select.evse_energy_star_time_zone.name": "Часова зона",
-  "entity.select.evse_energy_star_refresh_rate.name": "Частота оновлення",
-
-  "entity.switch.evse_energy_star_control_pe.name": "Контроль заземлення",
-  "entity.switch.evse_energy_star_restricted_mode.name": "Режим 16А",
-  "entity.switch.evse_energy_star_schedule.name": "Заряджати за розкладом",
-  "entity.switch.evse_energy_star_one_charge.name": "Один заряд",
-  "entity.switch.evse_energy_star_adaptive_mode.name": "Адаптивний режим",
-
-  "entity.button.evse_energy_star_time_get.name": "Синхронізувати час",
-  "entity.button.evse_energy_star_start_now.name": "Почати зарядку",
-
-  "entity.text.evse_energy_star_start_time.name": "Час старту",
-  "entity.text.evse_energy_star_stop_time.name": "Час завершення"
+  "config": {
+    "title": "EVSE Energy Star",
+    "step": {
+      "user": {
+        "title": "Підключення EVSE",
+        "description": "Введіть IP-адресу, логін та пароль для підключення до зарядної станції.",
+        "data": {
+          "host": "IP-адреса",
+          "username": "Ім’я користувача",
+          "password": "Пароль",
+          "device_type": "Тип пристрою"
+        },
+        "error": {
+          "connection": "Помилка підключення",
+          "invalid_ip": "Неправильна IP-адреса"
+        }
+      }
+    }
+  },
+  "options": {
+    "title": "Налаштування EVSE",
+    "step": {
+      "init": {
+        "title": "Оновлення EVSE",
+        "description": "Оновлення конфігурації зарядного пристрою",
+        "data": {
+          "host": "IP-адреса",
+          "username": "Ім’я користувача",
+          "password": "Пароль",
+          "device_type": "Тип пристрою"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "evse_energy_star_status": {
+        "name": "Статус зарядки"
+      },
+      "evse_energy_star_current_set": {
+        "name": "Струм (встановлений)"
+      },
+      "evse_energy_star_current_phase_1": {
+        "name": "Струм фаза 1"
+      },
+      "evse_energy_star_voltage_phase_1": {
+        "name": "Напруга фаза 1"
+      },
+      "evse_energy_star_temperature_box": {
+        "name": "Темп. корпусу"
+      },
+      "evse_energy_star_temperature_socket": {
+        "name": "Темп. роз'єму"
+      },
+      "evse_energy_star_leakage": {
+        "name": "Витік"
+      },
+      "evse_energy_star_session_energy": {
+        "name": "Енергія сесії"
+      },
+      "evse_energy_star_session_time": {
+        "name": "Час сесії"
+      },
+      "evse_energy_star_total_energy": {
+        "name": "Загальна енергія"
+      },
+      "evse_energy_star_system_time": {
+        "name": "Системний час"
+      },
+      "evse_energy_star_ground_status": {
+        "name": "Заземлення"
+      }
+    },
+    "number": {
+      "evse_energy_star_current_limit": {
+        "name": "Обмеження струму"
+      },
+      "evse_energy_star_voltage_adaptive": {
+        "name": "Напруга адаптації"
+      }
+    },
+    "select": {
+      "evse_energy_star_time_zone": {
+        "name": "Часова зона"
+      },
+      "evse_energy_star_refresh_rate": {
+        "name": "Частота оновлення, сек."
+      }
+    },
+    "switch": {
+      "evse_energy_star_control_pe": {
+        "name": "Контроль заземлення"
+      },
+      "evse_energy_star_restricted_mode": {
+        "name": "Режим 16А"
+      },
+      "evse_energy_star_schedule": {
+        "name": "Заряджати за розкладом"
+      },
+      "evse_energy_star_one_charge": {
+        "name": "Один заряд"
+      },
+      "evse_energy_star_adaptive_mode": {
+        "name": "Адаптивний режим"
+      }
+    },
+    "button": {
+      "evse_energy_star_time_get": {
+        "name": "Синхронізувати час"
+      },
+      "evse_energy_star_start_now": {
+        "name": "Почати зарядку"
+      }
+    },
+    "text": {
+      "evse_energy_star_start_time": {
+        "name": "Час старту"
+      },
+      "evse_energy_star_stop_time": {
+        "name": "Час завершення"
+      }
+    }
+  },
+  "selector": {
+    "device_type": {
+      "options": {
+        "1_phase": "1-фазна станція",
+        "3_phase": "3-фазна станція"
+      }
+    }
+  }
 }

@@ -5,12 +5,20 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.entity import EntityDescription
+from homeassistant.components.select import SelectEntity, SelectEntityDescription
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
 TIMEZONE_OPTIONS = [str(i) for i in range(-12, 13)]
 UPDATE_RATE_OPTIONS = [str(i) for i in [1, 2, 5, 10, 15, 30, 60]]
+UPDATE_RATE_DESCRIPTION = SelectEntityDescription(
+    key="refresh_rate",
+    name=None,
+    icon="mdi:history",
+    translation_key="refresh_rate"
+)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
@@ -27,9 +35,15 @@ class TimeZoneSelect(CoordinatorEntity, SelectEntity):
         self.coordinator = coordinator
         self._entry_id = entry_id
         self._attr_name = "Часова зона"
+        self._attr_translation_key = "time_zone"
+        self.entity_description = SelectEntityDescription(
+            key="time_zone",
+            translation_key="time_zone",
+            icon="mdi:map-clock-outline"
+        )
+        self._attr_has_entity_name = True
         self._attr_unique_id = f"time_zone_{entry_id}"
         self._attr_options = TIMEZONE_OPTIONS
-        self._attr_icon = "mdi:map-clock-outline"
         self._attr_current_option = None
 
         raw = self.coordinator.data.get("timeZone", "0")
@@ -80,13 +94,20 @@ class TimeZoneSelect(CoordinatorEntity, SelectEntity):
 
 class UpdateRateSelect(SelectEntity):
     def __init__(self, hass: HomeAssistant, config_entry: ConfigEntry, entry_id: str):
+        super().__init__()
         self.hass = hass
         self.config_entry = config_entry
         self._entry_id = entry_id
         self._attr_name = "Частота оновлення"
+        self._attr_translation_key = "refresh_rate"
+        self.entity_description = SelectEntityDescription(
+            key="refresh_rate",
+            translation_key="refresh_rate",
+            icon="mdi:history"
+        )
+        self._attr_has_entity_name = True
         self._attr_unique_id = f"refresh_rate_{entry_id}"
         self._attr_options = UPDATE_RATE_OPTIONS
-        self._attr_icon = "mdi:history"
         self._attr_current_option = str(config_entry.options.get("update_rate", 10))
 
     async def async_select_option(self, option: str):
