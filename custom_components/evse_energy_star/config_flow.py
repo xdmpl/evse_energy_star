@@ -4,6 +4,11 @@ from .const import DOMAIN
 from .options_flow import EVSEEnergyStarOptionsFlow
 import re
 
+DEVICE_TYPES = {
+    "1_phase": "1-фазна станція",
+    "3_phase": "3-фазна станція"
+}
+
 class EVSEEnergyStarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """EVSE Energy Star Config Flow."""
 
@@ -32,6 +37,7 @@ class EVSEEnergyStarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required("host"): str,
                 vol.Optional("username"): str,
                 vol.Optional("password"): str,
+                vol.Required("device_type", default="1_phase"): vol.In(DEVICE_TYPES),
             }),
             errors=errors
         )

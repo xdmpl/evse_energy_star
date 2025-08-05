@@ -3,5 +3,7 @@
   "content_in_root": false,
   "domains": ["sensor", "switch", "number", "button", "select"],
   "homeassistant": "2023.0.0",
-  "country": "UA"
+  "country": "UA",
+  "development_branch": "develop",
+  "version": "1.0.1-dev"
 }
