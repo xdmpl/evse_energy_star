@@ -4,7 +4,7 @@
   "domains": ["sensor", "switch", "number", "button", "select"],
   "homeassistant": "2023.0.0",
   "country": "UA",
-  "version": "1.0.2-dev",
+  "version": "1.1.0",
   "development_branch": "develop",
   "prerelease": true
 }

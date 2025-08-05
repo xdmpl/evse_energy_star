@@ -3,8 +3,8 @@ import voluptuous as vol
 from .const import DOMAIN
 
 DEVICE_TYPES = {
-    "1_phase": "1-фазна станція",
-    "3_phase": "3-фазна станція"
+    "1_phase": "1_phase",
+    "3_phase": "3_phase"
 }
 
 class EVSEEnergyStarOptionsFlow(config_entries.OptionsFlow):
