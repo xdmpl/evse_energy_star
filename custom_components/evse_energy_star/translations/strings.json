@@ -7,6 +7,7 @@
         "title": "Charger Parameters",
         "description": "Enter IP address and credentials",
         "data": {
+          "device_name": "Device name",
           "host": "Charger IP Address",
           "username": "Username",
           "password": "Password",
@@ -21,6 +22,7 @@
         "title": "Update EVSE",
         "description": "Update EVSE configuration",
         "data": {
+          "device_name": "Device name",
           "host": "Charger IP Address",
           "username": "Username",
           "password": "Password",

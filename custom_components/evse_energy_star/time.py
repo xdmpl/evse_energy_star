@@ -1,7 +1,8 @@
+# time.py
 import logging
 import aiohttp
 import async_timeout
-from homeassistant.components.text import TextEntity
+from homeassistant.components.text import TextEntity, TextEntityDescription
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -9,31 +10,45 @@ from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
-TEXT_DEFINITIONS = [
-    ("startTime", "start_time", "Час початку зарядки"),
-    ("stopTime", "stop_time", "Час завершення зарядки")
+TEXT_DESCRIPTIONS = [
+    TextEntityDescription(
+        key="startTime",
+        translation_key="evse_energy_star_start_time",
+        icon="mdi:clock-time-four-outline"
+    ),
+    TextEntityDescription(
+        key="stopTime",
+        translation_key="evse_energy_star_stop_time",
+        icon="mdi:clock-time-four-outline"
+    ),
 ]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     host = hass.data[DOMAIN][entry.entry_id]["host"]
-    entry_id = entry.entry_id
-    async_add_entities([
-        EVSETimeField(host, key, id_, name, entry_id)
-        for key, id_, name in TEXT_DEFINITIONS
-    ])
+    slug = hass.data[DOMAIN][entry.entry_id]["device_name_slug"]
+
+    entities = [
+        EVSETimeField(entry, host, description, slug)
+        for description in TEXT_DESCRIPTIONS
+    ]
+    async_add_entities(entities)
 
 class EVSETimeField(TextEntity):
-    def __init__(self, host, key, id_, name, entry_id):
+    def __init__(self, config_entry: ConfigEntry, host: str, description: TextEntityDescription, slug: str):
+        self.config_entry = config_entry
         self._host = host
-        self._key = key
-        self._id = id_
-        self._entry_id = entry_id
-        self._attr_name = name
-        self._attr_unique_id = f"{id_}_{entry_id}"
+        self.entity_description = description
+        self._key = description.key
+
+        # ✅ Використання перекладу
+        self._attr_translation_key = description.translation_key
+        self._attr_has_entity_name = True
+        self._attr_unique_id = f"{description.translation_key}_{config_entry.entry_id}"
         self._attr_native_value = None
         self._attr_min_length = 4
         self._attr_max_length = 5
         self._attr_mode = "text"
+        self._attr_suggested_object_id = f"{slug}_{description.translation_key}"
 
     async def async_update(self):
         try:
@@ -45,7 +60,7 @@ class EVSETimeField(TextEntity):
                         if value is not None:
                             self._attr_native_value = str(value)
         except Exception as err:
-            _LOGGER.warning("text.py → помилка оновлення %s → %s", self._key, err)
+            _LOGGER.warning("time.py → помилка оновлення %s → %s", self._key, err)
 
     async def async_set_value(self, value: str):
         try:
@@ -56,9 +71,9 @@ class EVSETimeField(TextEntity):
 
                     updated = {
                         "startTime": data.get("startTime"),
-                        "stopTime": data.get("stopTime"),
-                        "timeZone": data.get("timeZone"),
-                        "isAlarm": str(data.get("isAlarm")).lower()
+                        "stopTime":  data.get("stopTime"),
+                        "timeZone":  data.get("timeZone"),
+                        "isAlarm":   str(data.get("isAlarm")).lower(),
                     }
                     updated[self._key] = value
 
@@ -72,18 +87,18 @@ class EVSETimeField(TextEntity):
                     await session.post(
                         f"http://{self._host}/timer",
                         data=payload,
-                        headers={"Content-Type": "application/x-www-form-urlencoded"}
+                        headers={"Content-Type": "application/x-www-form-urlencoded"},
                     )
                     self._attr_native_value = value
                     self.async_write_ha_state()
         except Exception as err:
-            _LOGGER.error("text.py → помилка запису %s = %s → %s", self._key, value, err)
+            _LOGGER.error("time.py → помилка запису %s = %s → %s", self._key, value, err)
 
     @property
     def device_info(self):
         return {
-            "identifiers": {(DOMAIN, self._entry_id)},
-            "name": f"EVSE Energy Star ({self._host})",
+            "identifiers": {(DOMAIN, self.config_entry.entry_id)},
+            "name": self.config_entry.data.get("device_name", "Eveus Pro"),
             "manufacturer": "Energy Star",
-            "model": "EVSE"
+            "model": "EVSE",
         }

@@ -12,8 +12,7 @@ _LOGGER = logging.getLogger(__name__)
 NUMBER_DEFINITIONS = [
     {
         "key": "currentSet",
-        "id": "current_limit",
-        "name": "Обмеження струму",
+        "id": "evse_energy_star_current_limit",
         "icon": "mdi:current-dc",
         "min": 6,
         "max": 32,
@@ -22,8 +21,7 @@ NUMBER_DEFINITIONS = [
     },
     {
         "key": "aiVoltage",
-        "id": "voltage_adaptive",
-        "name": "Адаптивна напруга",
+        "id": "evse_energy_star_voltage_adaptive",
         "icon": "mdi:flash-outline",
         "min": 180,
         "max": 240,
@@ -34,31 +32,31 @@ NUMBER_DEFINITIONS = [
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
-    entry_id = entry.entry_id
 
     entities = [
-        EVSENumber(coordinator, entry_id, definition)
+        EVSENumber(coordinator, entry, definition)
         for definition in NUMBER_DEFINITIONS
     ]
     async_add_entities(entities)
 
 class EVSENumber(CoordinatorEntity, NumberEntity):
-    def __init__(self, coordinator, entry_id, config):
+    def __init__(self, coordinator, config_entry: ConfigEntry, config):
         super().__init__(coordinator)
         self.coordinator = coordinator
+        self.config_entry = config_entry
         self._host = coordinator.host
         self._key = config["key"]
-        self._id = config["id"]
+        self._translation_key = config["id"]
         self._config = config
-        self._entry_id = entry_id
-
-        self._attr_name = config["name"]
+        self._attr_translation_key = self._translation_key
         self._attr_icon = config["icon"]
         self._attr_native_unit_of_measurement = config["unit"]
         self._attr_native_step = config["step"]
         self._attr_native_min_value = config["min"]
-        self._attr_unique_id = f"{self._id}_{entry_id}"
+        self._attr_unique_id = f"{self._translation_key}_{config_entry.entry_id}"
         self._restricted_mode = False
+        self._attr_has_entity_name = True
+        self._attr_suggested_object_id = f"{self.coordinator.device_name_slug}_{self._attr_translation_key}"
 
     @property
     def available(self) -> bool:
@@ -101,8 +99,8 @@ class EVSENumber(CoordinatorEntity, NumberEntity):
     @property
     def device_info(self):
         return {
-            "identifiers": {(DOMAIN, self._entry_id)},
-            "name": f"EVSE Energy Star ({self._host})",
+            "identifiers": {(DOMAIN, self.config_entry.entry_id)},
+            "name": self.config_entry.data.get("device_name", "Eveus Pro"),
             "manufacturer": "Energy Star",
             "model": "EVSE",
             "sw_version": self.coordinator.data.get("fwVersion")
