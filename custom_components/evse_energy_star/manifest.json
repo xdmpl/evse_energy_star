@@ -2,7 +2,7 @@
   "domain": "evse_energy_star",
   "name": "EVSE Energy Star",
   "translation_key": "evse_energy_star",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "documentation": "https://github.com/V-Plum/evse_energy_star",
   "image": "https://github.com/V-Plum/evse_energy_star/raw/main/images/icon.png",
   "keywords": ["EVSE", "Energy Star Pro", "Eveus Pro", "Home Assistant", "charging"],

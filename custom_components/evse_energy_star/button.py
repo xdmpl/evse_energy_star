@@ -12,22 +12,24 @@ _LOGGER = logging.getLogger(__name__)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
-    entry_id = entry.entry_id
+    device_name_slug = hass.data[DOMAIN][entry.entry_id]["device_name_slug"]
 
     async_add_entities([
-        SyncTimeButton(coordinator, entry_id),
-        ChargeNowButton(coordinator, entry_id)
+        SyncTimeButton(coordinator, entry, device_name_slug),
+        ChargeNowButton(coordinator, entry, device_name_slug)
     ])
 
 class SyncTimeButton(CoordinatorEntity, ButtonEntity):
-    def __init__(self, coordinator, entry_id):
+    def __init__(self, coordinator, config_entry: ConfigEntry, slug: str):
         super().__init__(coordinator)
         self.coordinator = coordinator
-        self._entry_id = entry_id
-        self._attr_name = "Синхронізувати час"
-        self._attr_unique_id = f"time_get_{entry_id}"
+        self.config_entry = config_entry
+        self._attr_translation_key = "evse_energy_star_time_get"
+        self._attr_unique_id = f"time_get_{config_entry.entry_id}"
         self._attr_icon = "mdi:clock-check-outline"
         self._attr_should_poll = False
+        self._attr_has_entity_name = True
+        self._attr_suggested_object_id = f"{slug}_{self._attr_translation_key}"
 
     async def async_press(self):
         try:
@@ -59,22 +61,24 @@ class SyncTimeButton(CoordinatorEntity, ButtonEntity):
     @property
     def device_info(self):
         return {
-            "identifiers": {(DOMAIN, self._entry_id)},
-            "name": f"EVSE Energy Star ({self.coordinator.host})",
+            "identifiers": {(DOMAIN, self.config_entry.entry_id)},
+            "name": self.config_entry.data.get("device_name", "Eveus Pro"),
             "manufacturer": "Energy Star",
             "model": "EVSE",
             "sw_version": self.coordinator.data.get("fwVersion")
         }
 
 class ChargeNowButton(CoordinatorEntity, ButtonEntity):
-    def __init__(self, coordinator, entry_id):
+    def __init__(self, coordinator, config_entry: ConfigEntry, slug: str):
         super().__init__(coordinator)
         self.coordinator = coordinator
-        self._entry_id = entry_id
-        self._attr_name = "Зарядити зараз"
-        self._attr_unique_id = f"start_now_{entry_id}"
+        self.config_entry = config_entry
+        self._attr_translation_key = "evse_energy_star_start_now"
+        self._attr_unique_id = f"start_now_{config_entry.entry_id}"
         self._attr_icon = "mdi:battery-charging-high"
         self._attr_should_poll = False
+        self._attr_has_entity_name = True
+        self._attr_suggested_object_id = f"{slug}_{self._attr_translation_key}"
 
     async def async_press(self):
         try:
@@ -138,8 +142,8 @@ class ChargeNowButton(CoordinatorEntity, ButtonEntity):
     @property
     def device_info(self):
         return {
-            "identifiers": {(DOMAIN, self._entry_id)},
-            "name": f"EVSE Energy Star ({self.coordinator.host})",
+            "identifiers": {(DOMAIN, self.config_entry.entry_id)},
+            "name": self.config_entry.data.get("device_name", "Eveus Pro"),
             "manufacturer": "Energy Star",
             "model": "EVSE",
             "sw_version": self.coordinator.data.get("fwVersion")

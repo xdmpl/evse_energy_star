@@ -1,11 +1,17 @@
 {
   "config": {
     "title": "EVSE Energy Star",
+    "error": {
+      "required": "Обов'язкове поле",
+      "connection": "Помилка підключення",
+      "invalid_ip": "Неправильна IP-адреса"
+    },
     "step": {
       "user": {
         "title": "Підключення EVSE",
-        "description": "Введіть IP-адресу, логін та пароль для підключення до зарядної станції.",
+        "description": "Введіть назву пристрою, IP-адресу, логін та пароль для підключення до зарядної станції.",
         "data": {
+          "device_name": "Назва пристрою",
           "host": "IP-адреса",
           "username": "Ім’я користувача",
           "password": "Пароль",
@@ -13,7 +19,8 @@
         },
         "error": {
           "connection": "Помилка підключення",
-          "invalid_ip": "Неправильна IP-адреса"
+          "invalid_ip": "Неправильна IP-адреса",
+          "required": "Обов'язкове поле"
         }
       }
     }
@@ -25,6 +32,7 @@
         "title": "Оновлення EVSE",
         "description": "Оновлення конфігурації зарядного пристрою",
         "data": {
+          "device_name": "Назва пристрою",
           "host": "IP-адреса",
           "username": "Ім’я користувача",
           "password": "Пароль",
@@ -36,7 +44,23 @@
   "entity": {
     "sensor": {
       "evse_energy_star_status": {
-        "name": "Статус зарядки"
+        "name": "Статус зарядки",
+        "state": {
+          "no_data": "Немає даних",
+          "charging": "Заряд",
+          "waiting": "Очікування",
+          "ready": "Готовий",
+          "delayed_start": "Відкладений старт",
+          "overcurrent": "Перевищення струму",
+          "overvoltage": "Перевищення напруги",
+          "leakage": "Витік",
+          "station_error": "Помилка станції",
+          "overtemperature": "Перевищення температури",
+          "locked": "Заблоковано",
+          "no_ground": "Немає заземлення",
+          "plug_overheat": "Перегрів вилки",
+          "undervoltage": "Низька напруга"
+        }
       },
       "evse_energy_star_current_set": {
         "name": "Струм (встановлений)"
@@ -81,10 +105,10 @@
       }
     },
     "select": {
-      "evse_energy_star_time_zone": {
+      "time_zone": {
         "name": "Часова зона"
       },
-      "evse_energy_star_refresh_rate": {
+      "refresh_rate": {
         "name": "Частота оновлення, сек."
       }
     },
@@ -113,7 +137,7 @@
         "name": "Почати зарядку"
       }
     },
-    "text": {
+    "time": {
       "evse_energy_star_start_time": {
         "name": "Час старту"
       },

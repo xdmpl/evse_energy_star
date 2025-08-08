@@ -1,9 +1,10 @@
 import logging
 import aiohttp
 import async_timeout
+from datetime import timedelta
+from homeassistant.util import slugify
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from homeassistant.core import HomeAssistant
-from datetime import timedelta
 from homeassistant.config_entries import ConfigEntry
 from .const import DOMAIN
 
@@ -21,6 +22,15 @@ class EVSECoordinator(DataUpdateCoordinator):
         self.hass = hass
         self.host = host
         self.entry = entry
+
+        # Зберігаємо назву пристрою
+        self.device_name = entry.options.get(
+            "device_name",
+            entry.data.get("device_name", "Eveus Pro")
+        )
+
+        # Одразу зберігаємо slug, щоб уникнути дублювання коду в сутностях
+        self.device_name_slug = slugify(self.device_name)
 
     async def _async_update_data(self):
         try:

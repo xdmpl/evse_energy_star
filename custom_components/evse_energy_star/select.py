@@ -5,36 +5,27 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.entity import EntityDescription
-from homeassistant.components.select import SelectEntity, SelectEntityDescription
+from homeassistant.components.select import SelectEntityDescription
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
 TIMEZONE_OPTIONS = [str(i) for i in range(-12, 13)]
 UPDATE_RATE_OPTIONS = [str(i) for i in [1, 2, 5, 10, 15, 30, 60]]
-UPDATE_RATE_DESCRIPTION = SelectEntityDescription(
-    key="refresh_rate",
-    name=None,
-    icon="mdi:history",
-    translation_key="refresh_rate"
-)
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
-    entry_id = entry.entry_id
 
     async_add_entities([
-        TimeZoneSelect(coordinator, entry_id),
-        UpdateRateSelect(hass, entry, entry_id)
+        TimeZoneSelect(coordinator, entry),
+        UpdateRateSelect(hass, coordinator, entry)
     ])
 
 class TimeZoneSelect(CoordinatorEntity, SelectEntity):
-    def __init__(self, coordinator, entry_id):
+    def __init__(self, coordinator, config_entry: ConfigEntry):
         super().__init__(coordinator)
         self.coordinator = coordinator
-        self._entry_id = entry_id
-        self._attr_name = "Часова зона"
+        self.config_entry = config_entry
         self._attr_translation_key = "time_zone"
         self.entity_description = SelectEntityDescription(
             key="time_zone",
@@ -42,7 +33,9 @@ class TimeZoneSelect(CoordinatorEntity, SelectEntity):
             icon="mdi:map-clock-outline"
         )
         self._attr_has_entity_name = True
-        self._attr_unique_id = f"time_zone_{entry_id}"
+        self._attr_suggested_object_id = f"{self.coordinator.device_name_slug}_{self._attr_translation_key}"
+
+        self._attr_unique_id = f"time_zone_{config_entry.entry_id}"
         self._attr_options = TIMEZONE_OPTIONS
         self._attr_current_option = None
 
@@ -85,20 +78,19 @@ class TimeZoneSelect(CoordinatorEntity, SelectEntity):
     @property
     def device_info(self):
         return {
-            "identifiers": {(DOMAIN, self._entry_id)},
-            "name": f"EVSE Energy Star ({self.coordinator.host})",
+            "identifiers": {(DOMAIN, self.config_entry.entry_id)},
+            "name": self.config_entry.data.get("device_name", "Eveus Pro"),
             "manufacturer": "Energy Star",
             "model": "EVSE",
             "sw_version": self.coordinator.data.get("fwVersion")
         }
 
 class UpdateRateSelect(SelectEntity):
-    def __init__(self, hass: HomeAssistant, config_entry: ConfigEntry, entry_id: str):
+    def __init__(self, hass: HomeAssistant, coordinator, config_entry: ConfigEntry):
         super().__init__()
         self.hass = hass
+        self.coordinator = coordinator
         self.config_entry = config_entry
-        self._entry_id = entry_id
-        self._attr_name = "Частота оновлення"
         self._attr_translation_key = "refresh_rate"
         self.entity_description = SelectEntityDescription(
             key="refresh_rate",
@@ -106,7 +98,9 @@ class UpdateRateSelect(SelectEntity):
             icon="mdi:history"
         )
         self._attr_has_entity_name = True
-        self._attr_unique_id = f"refresh_rate_{entry_id}"
+        self._attr_suggested_object_id = f"{self.coordinator.device_name_slug}_{self._attr_translation_key}"
+
+        self._attr_unique_id = f"refresh_rate_{config_entry.entry_id}"
         self._attr_options = UPDATE_RATE_OPTIONS
         self._attr_current_option = str(config_entry.options.get("update_rate", 10))
 
@@ -129,9 +123,9 @@ class UpdateRateSelect(SelectEntity):
     @property
     def device_info(self):
         return {
-            "identifiers": {(DOMAIN, self._entry_id)},
-            "name": f"EVSE Energy Star ({self.config_entry.data.get('host')})",
+            "identifiers": {(DOMAIN, self.config_entry.entry_id)},
+            "name": self.config_entry.data.get('device_name', 'Eveus Pro'),
             "manufacturer": "Energy Star",
             "model": "EVSE",
-            "sw_version": self.config_entry.options.get("fwVersion")
+            "sw_version": self.coordinator.data.get("fwVersion")
         }

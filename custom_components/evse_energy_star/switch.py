@@ -8,33 +8,34 @@ from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 SWITCH_DEFINITIONS = [
-    ("groundCtrl", "control_pe", "Контроль заземлення"),
-    ("restrictedMode", "restricted_mode", "Режим 16А"),
+    ("groundCtrl", "evse_energy_star_control_pe"),
+    ("restrictedMode", "evse_energy_star_restricted_mode"),
 ]
 
 async def async_setup_entry(hass, entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
-    entry_id = entry.entry_id
 
     entities = [
-        EVSESwitch(coordinator, key, id_, name, entry_id)
-        for key, id_, name in SWITCH_DEFINITIONS
+        EVSESwitch(coordinator, entry, key, trans_key)
+        for key, trans_key in SWITCH_DEFINITIONS
     ]
 
-    entities.append(EVSEScheduleSwitch(coordinator, entry_id))
-    entities.append(EVSESimpleSwitch(coordinator, "oneCharge", "one_charge", "Один заряд", entry_id))
-    entities.append(EVSESimpleSwitch(coordinator, "aiMode", "adaptive_mode", "Адаптивний режим", entry_id))
+    entities.append(EVSEScheduleSwitch(coordinator, entry))
+    entities.append(EVSESimpleSwitch(coordinator, entry, "oneCharge", "evse_energy_star_one_charge"))
+    entities.append(EVSESimpleSwitch(coordinator, entry, "aiMode", "evse_energy_star_adaptive_mode"))
 
     async_add_entities(entities)
 
 class EVSESwitch(SwitchEntity):
-    def __init__(self, coordinator, key, id_, name, entry_id):
+    def __init__(self, coordinator, config_entry: ConfigEntry, key, translation_key):
         self.coordinator = coordinator
+        self.config_entry = config_entry
         self._host = coordinator.host
         self._key = key
-        self._attr_name = name
-        self._attr_unique_id = f"{id_}_{entry_id}"
-        self._entry_id = entry_id
+        self._attr_translation_key = translation_key
+        self._attr_unique_id = f"{translation_key}_{config_entry.entry_id}"
+        self._attr_has_entity_name = True
+        self._attr_suggested_object_id = f"{self.coordinator.device_name_slug}_{self._attr_translation_key}"
 
     @property
     def available(self):
@@ -86,20 +87,22 @@ class EVSESwitch(SwitchEntity):
     @property
     def device_info(self):
         return {
-            "identifiers": {(DOMAIN, self._entry_id)},
-            "name": f"EVSE Energy Star ({self._host})",
+            "identifiers": {(DOMAIN, self.config_entry.entry_id)},
+            "name": self.config_entry.data.get('device_name', 'Eveus Pro'),
             "manufacturer": "Energy Star",
             "model": "EVSE",
             "sw_version": self.coordinator.data.get("fwVersion")
         }
 
 class EVSEScheduleSwitch(SwitchEntity):
-    def __init__(self, coordinator, entry_id):
+    def __init__(self, coordinator, config_entry: ConfigEntry):
         self.coordinator = coordinator
+        self.config_entry = config_entry
         self._host = coordinator.host
-        self._entry_id = entry_id
-        self._attr_name = "Заряджати за розкладом"
-        self._attr_unique_id = f"schedule_{entry_id}"
+        self._attr_translation_key = "evse_energy_star_schedule"
+        self._attr_unique_id = f"schedule_{config_entry.entry_id}"
+        self._attr_has_entity_name = True
+        self._attr_suggested_object_id = f"{self.coordinator.device_name_slug}_{self._attr_translation_key}"
 
     @property
     def available(self):
@@ -140,21 +143,23 @@ class EVSEScheduleSwitch(SwitchEntity):
     @property
     def device_info(self):
         return {
-            "identifiers": {(DOMAIN, self._entry_id)},
-            "name": f"EVSE Energy Star ({self._host})",
+            "identifiers": {(DOMAIN, self.config_entry.entry_id)},
+            "name": self.config_entry.data.get('device_name', 'Eveus Pro'),
             "manufacturer": "Energy Star",
             "model": "EVSE",
             "sw_version": self.coordinator.data.get("fwVersion")
         }
 
 class EVSESimpleSwitch(SwitchEntity):
-    def __init__(self, coordinator, key, id_, name, entry_id):
+    def __init__(self, coordinator, config_entry: ConfigEntry, key, translation_key):
         self.coordinator = coordinator
+        self.config_entry = config_entry
         self._host = coordinator.host
         self._key = key
-        self._attr_name = name
-        self._attr_unique_id = f"{id_}_{entry_id}"
-        self._entry_id = entry_id
+        self._attr_translation_key = translation_key
+        self._attr_unique_id = f"{translation_key}_{config_entry.entry_id}"
+        self._attr_has_entity_name = True
+        self._attr_suggested_object_id = f"{self.coordinator.device_name_slug}_{self._attr_translation_key}"
 
     @property
     def available(self):
@@ -162,7 +167,10 @@ class EVSESimpleSwitch(SwitchEntity):
 
     @property
     def is_on(self):
-        val = self.coordinator.data.get(self._key) or self.coordinator.data.get("aiStatus") if self._key == "aiMode" else None
+        if self._key == "aiMode":
+            val = self.coordinator.data.get("aiStatus")
+        else:
+            val = self.coordinator.data.get(self._key)
         return str(val).lower() in ["true", "1"]
 
     async def async_turn_on(self):
@@ -187,8 +195,8 @@ class EVSESimpleSwitch(SwitchEntity):
     @property
     def device_info(self):
         return {
-            "identifiers": {(DOMAIN, self._entry_id)},
-            "name": f"EVSE Energy Star ({self._host})",
+            "identifiers": {(DOMAIN, self.config_entry.entry_id)},
+            "name": self.config_entry.data.get('device_name', 'Eveus Pro'),
             "manufacturer": "Energy Star",
             "model": "EVSE",
             "sw_version": self.coordinator.data.get("fwVersion")

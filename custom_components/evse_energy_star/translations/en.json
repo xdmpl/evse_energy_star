@@ -1,29 +1,38 @@
 {
   "config": {
     "title": "EVSE Energy Star",
+    "error": {
+      "required": "Required field",
+      "connection": "Connection error",
+      "invalid_ip": "Invalid IP address"
+    },
     "step": {
       "user": {
         "title": "EVSE Connection",
-        "description": "Enter the IP address, username, and password to connect to the charging station.",
+        "description": "Enter the device name, IP address, username, and password to connect to the charging station.",
         "data": {
+          "device_name": "Device name",
           "host": "Charger IP Address",
           "username": "Username",
           "password": "Password",
           "device_type": "Device type"
+        },
+        "error": {
+          "connection": "Connection error",
+          "invalid_ip": "Invalid IP address",
+          "required": "Required field"
         }
       }
-    },
-    "error": {
-      "connection": "Connection error",
-      "invalid_ip": "Invalid IP address"
     }
   },
   "options": {
     "title": "EVSE Settings",
     "step": {
       "init": {
+        "title": "Update EVSE",
         "description": "Update EVSE configuration",
         "data": {
+          "device_name": "Device name",
           "host": "Charger IP",
           "username": "Username",
           "password": "Password",
@@ -35,7 +44,23 @@
   "entity": {
     "sensor": {
       "evse_energy_star_status": {
-        "name": "Charging Status"
+        "name": "Charging Status",
+        "state": {
+          "no_data": "No data",
+          "charging": "Charging",
+          "waiting": "Waiting",
+          "ready": "Ready",
+          "delayed_start": "Delayed start",
+          "overcurrent": "Overcurrent",
+          "overvoltage": "Overvoltage",
+          "leakage": "Leakage",
+          "station_error": "Station error",
+          "overtemperature": "Overtemperature",
+          "locked": "Locked",
+          "no_ground": "No ground",
+          "plug_overheat": "Plug overheat",
+          "undervoltage": "Undervoltage"
+        }
       },
       "evse_energy_star_current_set": {
         "name": "Set Current"
@@ -80,10 +105,10 @@
       }
     },
     "select": {
-      "evse_energy_star_time_zone": {
+      "time_zone": {
         "name": "Time Zone"
       },
-      "evse_energy_star_refresh_rate": {
+      "refresh_rate": {
         "name": "Update Rate, sec."
       }
     },
@@ -112,7 +137,7 @@
         "name": "Start Charging"
       }
     },
-    "text": {
+    "time": {
       "evse_energy_star_start_time": {
         "name": "Start Time"
       },
