@@ -34,7 +34,7 @@ class EVSECoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         try:
-            async with async_timeout.timeout(5):
+            async with async_timeout.timeout(35):
                 async with aiohttp.ClientSession() as session:
 
                     # 🟡 КРОК 1: POST /init
